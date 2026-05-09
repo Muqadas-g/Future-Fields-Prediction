@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechHorizon — Future Technology Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --void: #080B10;
+  --deep: #0E1219;
+  --surface: #141920;
+  --panel: #1A2130;
+  --edge: rgba(255,255,255,0.07);
+  --edge-hi: rgba(255,255,255,0.13);
+  --ghost: rgba(255,255,255,0.35);
+  --mist: rgba(255,255,255,0.55);
+  --silver: rgba(255,255,255,0.75);
+  --snow: #F2F4F7;
+  --azure: #3B7CFF;
+  --azure-lo: rgba(59,124,255,0.12);
+  --azure-md: rgba(59,124,255,0.22);
+  --azure-hi: rgba(59,124,255,0.85);
+  --emerald: #10C07A;
+  --emerald-lo: rgba(16,192,122,0.1);
+  --topaz: #FFB020;
+  --topaz-lo: rgba(255,176,32,0.1);
+  --rose: #FF4B6E;
+  --rose-lo: rgba(255,75,110,0.1);
+  --violet: #8B5CF6;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Instrument Sans', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --nav-h: 68px;
+  --max: 1320px;
+  --r: 10px;
+  --r-lg: 16px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--sans);
+  background: var(--void);
+  color: var(--silver);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+
+/* ─── GRAIN OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.45;
+}
+
+/* ─── NAV ─── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(8,11,16,0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--edge);
+  transition: border-color 0.3s;
+}
+.nav.scrolled { border-bottom-color: var(--edge-hi); }
+.nav-inner {
+  max-width: var(--max); margin: 0 auto; padding: 0 2.5rem;
+  height: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  display: flex; align-items: center; gap: 11px;
+  font-family: var(--sans); font-size: 1.1rem; font-weight: 600;
+  color: var(--snow); text-decoration: none; letter-spacing: -0.01em;
+}
+.logo-mark {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--azure) 0%, #6B4FFF 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-family: var(--mono); font-weight: 400;
+  color: #fff; letter-spacing: 0.05em;
+  box-shadow: 0 0 20px rgba(59,124,255,0.35);
+}
+.nav-links { display: flex; align-items: center; gap: 2px; list-style: none; }
+.nav-links a {
+  color: var(--ghost); text-decoration: none; font-size: 0.825rem;
+  font-weight: 400; padding: 0.45rem 0.9rem; border-radius: var(--r);
+  transition: color 0.2s, background 0.2s; letter-spacing: 0.01em;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--snow); background: rgba(255,255,255,0.06); }
+.nav-links a.active { color: var(--snow); }
+.nav-pill {
+  background: var(--azure) !important; color: #fff !important;
+  padding: 0.45rem 1.35rem !important; border-radius: 99px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 0 20px rgba(59,124,255,0.3) !important;
+  transition: box-shadow 0.2s, opacity 0.2s !important;
+}
+.nav-pill:hover { opacity: 0.9 !important; box-shadow: 0 0 30px rgba(59,124,255,0.5) !important; background: var(--azure) !important; }
+.mob-btn { display: none; background: none; border: none; cursor: pointer; color: var(--silver); padding: 4px; }
+
+/* ─── STATUS BAR ─── */
+.status-bar {
+  background: rgba(59,124,255,0.07);
+  border-bottom: 1px solid rgba(59,124,255,0.15);
+  padding: 0.5rem 0;
+  overflow: hidden;
+  position: relative;
+}
+.status-bar::before, .status-bar::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2;
+  pointer-events: none;
+}
+.status-bar::before { left: 0; background: linear-gradient(to right, var(--void), transparent); }
+.status-bar::after { right: 0; background: linear-gradient(to left, var(--void), transparent); }
+.ticker-track { display: flex; gap: 3rem; animation: ticker 30s linear infinite; white-space: nowrap; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.tick-item {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ghost);
+  letter-spacing: 0.05em;
+}
+.tick-sep { color: rgba(255,255,255,0.12); }
+.tick-up { color: var(--emerald); }
+.tick-dn { color: var(--rose); }
+.tick-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+/* ─── PAGES ─── */
+.pages { padding-top: var(--nav-h); }
+.page { display: none; }
+.page.active { display: block; }
+.page-enter { animation: fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+/* ─── LAYOUT ─── */
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 2.5rem; }
+.section { padding: 7rem 2.5rem; max-width: var(--max); margin: 0 auto; }
+.section-sm { padding: 4.5rem 2.5rem; max-width: var(--max); margin: 0 auto; }
+
+/* ─── TYPOGRAPHY ─── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--azure);
+  margin-bottom: 1.5rem;
+}
+.eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--azure); animation: pulse 2.5s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.heading-xl {
+  font-family: var(--serif); font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 700; line-height: 1.04; letter-spacing: -0.01em; color: var(--snow);
+  margin-bottom: 1.75rem;
+}
+.heading-xl em { font-style: italic; color: var(--azure); }
+.heading-lg {
+  font-family: var(--serif); font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: var(--snow);
+  margin-bottom: 1rem;
+}
+.heading-lg em { font-style: italic; color: var(--azure); }
+.heading-md {
+  font-family: var(--sans); font-size: 1.35rem;
+  font-weight: 600; letter-spacing: -0.02em; color: var(--snow);
+  margin-bottom: 0.5rem;
+}
+.subtext { font-size: 1rem; color: var(--mist); line-height: 1.75; max-width: 560px; font-weight: 300; }
+.subtext-sm { font-size: 0.875rem; color: var(--ghost); line-height: 1.7; font-weight: 300; }
+
+/* ─── BUTTONS ─── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+  border-radius: 99px; padding: 0.7rem 1.6rem;
+  text-decoration: none; cursor: pointer; border: none;
+  transition: all 0.22s ease; letter-spacing: 0.01em;
+}
+.btn-primary {
+  background: var(--azure); color: #fff;
+  box-shadow: 0 0 24px rgba(59,124,255,0.35);
+}
+.btn-primary:hover { box-shadow: 0 0 36px rgba(59,124,255,0.55); transform: translateY(-1px); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--silver); border: 1px solid var(--edge-hi); }
+.btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 8rem 2.5rem 5rem;
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: 0; left: -200px; width: 700px; height: 700px;
+  background: radial-gradient(ellipse at center, rgba(59,124,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-btns { display: flex; gap: 12px; margin-top: 2.75rem; flex-wrap: wrap; }
+.hero-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin-top: 4.5rem;
+  border-top: 1px solid var(--edge);
+  padding-top: 2.5rem;
+  gap: 2rem;
+}
+.hero-stat {}
+.stat-n {
+  font-family: var(--serif); font-size: 2.5rem; font-weight: 700;
+  color: var(--snow); display: block; line-height: 1; margin-bottom: 0.4rem;
+}
+.stat-l { font-size: 0.78rem; color: var(--ghost); letter-spacing: 0.04em; font-family: var(--mono); }
+
+/* ─── MARKET CARD ─── */
+.market-card {
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  position: relative;
+}
+.market-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,124,255,0.5), transparent);
+}
+.market-card-header {
+  padding: 1.25rem 1.5rem 1rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--edge);
+}
+.card-title { font-size: 0.8rem; font-weight: 500; color: var(--mist); letter-spacing: 0.02em; }
+.live-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 0.65rem; color: var(--emerald);
+  background: var(--emerald-lo); border: 1px solid rgba(16,192,122,0.25);
+  padding: 3px 9px; border-radius: 99px; letter-spacing: 0.08em;
+}
+.live-badge::before { content: ''; width: 5px; height: 5px; background: var(--emerald); border-radius: 50%; animation: pulse 2s infinite; }
+.market-card-body { padding: 1.25rem 1.5rem; }
+.chart-wrap { height: 200px; position: relative; }
+
+/* ─── FEATURE STRIP ─── */
+.feature-strip {
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+  background: var(--deep);
+}
+.feature-strip-inner {
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.feature-item {
+  padding: 2.25rem 2.5rem;
+  border-right: 1px solid var(--edge);
+  position: relative; overflow: hidden;
+  transition: background 0.25s;
+}
+.feature-item:hover { background: rgba(255,255,255,0.02); }
+.feature-item:last-child { border-right: none; }
+.feature-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem; font-size: 0.9rem;
+}
+.fi-blue { background: var(--azure-lo); color: var(--azure); border: 1px solid rgba(59,124,255,0.2); }
+.fi-green { background: var(--emerald-lo); color: var(--emerald); border: 1px solid rgba(16,192,122,0.2); }
+.fi-amber { background: var(--topaz-lo); color: var(--topaz); border: 1px solid rgba(255,176,32,0.2); }
+.fi-violet { background: rgba(139,92,246,0.1); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); }
+.feature-title { font-size: 0.875rem; font-weight: 600; color: var(--snow); margin-bottom: 0.4rem; }
+.feature-desc { font-size: 0.8rem; color: var(--ghost); line-height: 1.6; font-weight: 300; }
+
+/* ─── SECTION HEADER ─── */
+.section-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 2.75rem; flex-wrap: wrap; gap: 1.25rem;
+}
+
+/* ─── FIELD CARDS ─── */
+.fields-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1px; background: var(--edge);
+  border: 1px solid var(--edge); border-radius: var(--r-lg); overflow: hidden;
+}
+.field-card {
+  background: var(--surface);
+  padding: 2rem;
+  cursor: pointer;
+  transition: background 0.25s;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.field-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--azure), var(--violet));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.field-card:hover { background: var(--panel); }
+.field-card:hover::after { transform: scaleX(1); }
+.field-card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+.field-icon-wrap {
+  width: 46px; height: 46px;
+  background: var(--panel);
+  border: 1px solid var(--edge-hi);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.field-badge {
+  font-family: var(--mono); font-size: 0.65rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 99px;
+}
+.badge-growth { background: var(--emerald-lo); color: var(--emerald); border: 1px solid rgba(16,192,122,0.2); }
+.badge-emerging { background: var(--azure-lo); color: var(--azure); border: 1px solid rgba(59,124,255,0.2); }
+.badge-mature { background: var(--topaz-lo); color: var(--topaz); border: 1px solid rgba(255,176,32,0.2); }
+
+.field-name {
+  font-family: var(--sans); font-size: 1.2rem; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--snow); margin-bottom: 0.5rem;
+}
+.field-desc {
+  font-size: 0.82rem; color: var(--ghost); line-height: 1.65;
+  margin-bottom: 1.75rem; font-weight: 300;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.field-metrics {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; margin-bottom: 1.75rem;
+}
+.metric {
+  padding: 0.7rem 0.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--edge);
+  border-radius: 8px; text-align: center;
+}
+.metric-val {
+  font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+  display: block; margin-bottom: 3px;
+}
+.metric-key { font-size: 0.65rem; color: var(--ghost); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--mono); }
+.field-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.player-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.player-tag {
+  font-size: 0.7rem; color: var(--ghost);
+  padding: 3px 8px; background: rgba(255,255,255,0.04);
+  border: 1px solid var(--edge); border-radius: 4px;
+  font-family: var(--mono);
+}
+.see-more {
+  font-size: 0.775rem; color: var(--azure); font-weight: 500;
+  display: flex; align-items: center; gap: 5px;
+  transition: gap 0.2s;
+}
+.field-card:hover .see-more { gap: 8px; }
+
+/* ─── PREDICTIONS TABLE ─── */
+.pred-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.pred-table th {
+  text-align: left; padding: 0.8rem 1.25rem;
+  background: rgba(255,255,255,0.03); color: var(--ghost);
+  font-weight: 400; font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.1em; font-family: var(--mono);
+  border-bottom: 1px solid var(--edge);
+}
+.pred-table td {
+  padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--edge);
+  vertical-align: middle; color: var(--silver);
+  font-size: 0.875rem; font-weight: 300;
+}
+.pred-table tbody tr:last-child td { border-bottom: none; }
+.pred-table tbody tr { transition: background 0.2s; }
+.pred-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+.pred-table strong { font-weight: 600; color: var(--snow); }
+.pred-year { font-family: var(--mono); font-size: 0.75rem; color: var(--ghost); }
+.prob-row { display: flex; align-items: center; gap: 10px; }
+.prob-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; max-width: 100px; }
+.prob-fill { height: 100%; border-radius: 99px; }
+.prob-pct { font-family: var(--mono); font-size: 0.775rem; font-weight: 500; min-width: 36px; }
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.card-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--edge);
+  font-family: var(--mono); font-size: 0.68rem;
+  font-weight: 400; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ghost);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-header-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.card-body { padding: 1.5rem; }
+
+/* ─── DASHBOARD ─── */
+.dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.dash-card {
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.dash-card:hover { border-color: var(--edge-hi); }
+.dash-card-header {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--edge);
+  display: flex; align-items: center; gap: 10px;
+}
+.dash-card-icon {
+  width: 26px; height: 26px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; flex-shrink: 0;
+}
+.dash-card-title { font-size: 0.8rem; font-weight: 500; color: var(--mist); letter-spacing: 0.01em; }
+.dash-card-body { padding: 1.5rem; }
+.chart-h { height: 270px; position: relative; }
+
+/* ─── STATS PAGE ─── */
+.stats-big {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px; background: var(--edge);
+  border: 1px solid var(--edge); border-radius: var(--r-lg); overflow: hidden;
+}
+.stat-big {
+  background: var(--surface);
+  padding: 2.75rem 2.25rem;
+  transition: background 0.25s;
+  position: relative; overflow: hidden;
+}
+.stat-big:hover { background: var(--panel); }
+.stat-big::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--azure-md), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.stat-big:hover::before { opacity: 1; }
+.stat-big-n {
+  font-family: var(--serif); font-size: 3.75rem; font-weight: 700;
+  letter-spacing: -0.02em; color: var(--snow); display: block;
+  margin-bottom: 0.4rem; line-height: 1;
+}
+.stat-big-label { font-size: 0.8rem; color: var(--ghost); font-weight: 300; font-family: var(--mono); }
+.stat-big-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── DETAIL PAGE ─── */
+.detail-hero {
+  background: var(--deep);
+  border-bottom: 1px solid var(--edge);
+  padding: 3.5rem 2.5rem 2.75rem;
+  position: relative; overflow: hidden;
+}
+.detail-hero::before {
+  content: '';
+  position: absolute; top: -200px; right: -200px; width: 600px; height: 600px;
+  background: radial-gradient(ellipse, rgba(59,124,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.detail-hero-inner { max-width: var(--max); margin: 0 auto; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.8rem; color: var(--ghost); text-decoration: none;
+  margin-bottom: 2.5rem; transition: color 0.2s; font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+.back-link:hover { color: var(--silver); }
+.detail-meta { display: flex; align-items: center; gap: 14px; margin-bottom: 1.25rem; }
+.detail-icon-wrap {
+  width: 54px; height: 54px;
+  background: var(--panel); border: 1px solid var(--edge-hi);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 1.75rem;
+}
+.detail-h {
+  font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; letter-spacing: -0.01em; color: var(--snow);
+  margin-bottom: 0.85rem;
+}
+.detail-blurb { font-size: 0.95rem; color: var(--mist); line-height: 1.75; max-width: 680px; font-weight: 300; }
+.detail-kpi-row {
+  display: flex; gap: 1px; margin-top: 2.25rem;
+  background: var(--edge);
+  border-radius: var(--r); overflow: hidden;
+  border: 1px solid var(--edge); width: fit-content;
+}
+.detail-kpi { background: var(--surface); padding: 1rem 2rem; text-align: center; }
+.kpi-val {
+  font-family: var(--serif); font-size: 1.75rem; font-weight: 700;
+  display: block; line-height: 1; margin-bottom: 5px;
+}
+.kpi-key { font-size: 0.68rem; color: var(--ghost); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.detail-body { max-width: var(--max); margin: 0 auto; padding: 2.5rem 2.5rem; display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+.detail-main { display: flex; flex-direction: column; gap: 1.25rem; }
+.detail-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.timeline-item {
+  display: flex; gap: 1.25rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--edge);
+}
+.timeline-item:last-child { border-bottom: none; padding-bottom: 0; }
+.tl-year {
+  font-family: var(--mono); font-size: 0.75rem; color: var(--azure);
+  font-weight: 500; min-width: 44px; padding-top: 2px;
+}
+.tl-body { flex: 1; }
+.tl-event { font-size: 0.875rem; font-weight: 500; color: var(--silver); margin-bottom: 8px; }
+.tl-prob { display: flex; align-items: center; gap: 8px; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag { font-size: 0.775rem; padding: 5px 11px; border-radius: 6px; }
+.tag-skill { background: rgba(255,255,255,0.04); color: var(--ghost); border: 1px solid var(--edge); font-family: var(--mono); font-size: 0.7rem; }
+.tag-tool { background: var(--azure-lo); color: var(--azure); border: 1px solid rgba(59,124,255,0.2); font-family: var(--mono); font-size: 0.7rem; }
+.future-text { font-size: 0.9rem; color: var(--mist); line-height: 1.8; font-weight: 300; }
+
+/* ─── DIVIDER ─── */
+.divider { border: none; border-top: 1px solid var(--edge); margin: 0 2.5rem; }
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--deep);
+  border-top: 1px solid var(--edge);
+  padding: 5rem 2.5rem 2.5rem; margin-top: 0;
+}
+.footer-inner { max-width: var(--max); margin: 0 auto; }
+.footer-top {
+  display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr;
+  gap: 3.5rem; padding-bottom: 3rem;
+  border-bottom: 1px solid var(--edge);
+}
+.footer-brand {
+  font-family: var(--sans); font-size: 1rem; font-weight: 600;
+  color: var(--snow); margin-bottom: 0.85rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-brand-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--azure), #6B4FFF);
+  border-radius: 6px; display: flex; align-items: center;
+  justify-content: center; font-size: 0.6rem; font-family: var(--mono); color: #fff;
+}
+.footer-blurb { font-size: 0.825rem; color: var(--ghost); line-height: 1.7; font-weight: 300; max-width: 320px; }
+.footer-col h5 {
+  font-size: 0.65rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.12em; font-family: var(--mono);
+  color: rgba(255,255,255,0.25); margin-bottom: 1.25rem;
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 0.7rem; }
+.footer-col ul li a {
+  color: var(--ghost); text-decoration: none; font-size: 0.85rem;
+  transition: color 0.2s; font-weight: 300;
+}
+.footer-col ul li a:hover { color: var(--silver); }
+.footer-bottom {
+  padding-top: 2rem; display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 1rem;
+}
+.footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.2); font-family: var(--mono); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .detail-body { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .feature-strip-inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed; top: var(--nav-h); left: 0; right: 0;
+    background: rgba(8,11,16,0.97); backdrop-filter: blur(20px);
+    flex-direction: column; padding: 1.5rem;
+    border-bottom: 1px solid var(--edge); display: none;
+  }
+  .nav-links.active { display: flex; }
+  .mob-btn { display: block; }
+  .hero { padding: 4.5rem 1.5rem 3rem; }
+  .hero-stats { grid-template-columns: repeat(3, 1fr); }
+  .fields-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .stats-big { grid-template-columns: 1fr 1fr; }
+  .section, .section-sm { padding: 4.5rem 1.5rem; }
+  .feature-strip-inner { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .hero-stats { grid-template-columns: 1fr; }
+  .stats-big { grid-template-columns: 1fr; }
+  .feature-strip-inner { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="logo" onclick="nav('home');return false;">
+      <div class="logo-mark">TH</div>
+      TechHorizon
+    </a>
+    <button class="mob-btn" id="mobBtn" aria-label="Menu"><i class="fas fa-bars fa-sm"></i></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" data-page="home" onclick="nav('home');return false;" class="active">Overview</a></li>
+      <li><a href="#" data-page="fields" onclick="nav('fields');return false;">Fields</a></li>
+      <li><a href="#" data-page="dashboard" onclick="nav('dashboard');return false;">Dashboard</a></li>
+      <li><a href="#" data-page="stats" onclick="nav('stats');return false;">Statistics</a></li>
+      <li><a href="#" data-page="dashboard" onclick="nav('dashboard');return false;" class="nav-pill">Live Data</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- STATUS BAR -->
+<div class="status-bar" style="margin-top:var(--nav-h)">
+  <div class="ticker-track" id="tickerTrack">
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">AI/ML</span> +2.3%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Clean Energy</span> +5.1%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>Quantum Jobs <span style="color:var(--silver)">+150K</span></span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-dn"></span><span class="tick-dn">Crypto</span> −1.2%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Biotech</span> +3.8%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>Cybersecurity <span style="color:var(--silver)">+500K open roles</span></span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Cloud</span> +3.5%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>NLP Market <span style="color:var(--silver)">$180B</span></span>
+    <span class="tick-sep">·</span>
+    <!-- duplicate for seamless loop -->
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">AI/ML</span> +2.3%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Clean Energy</span> +5.1%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>Quantum Jobs <span style="color:var(--silver)">+150K</span></span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-dn"></span><span class="tick-dn">Crypto</span> −1.2%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Biotech</span> +3.8%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>Cybersecurity <span style="color:var(--silver)">+500K open roles</span></span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot tick-up"></span><span class="tick-up">Cloud</span> +3.5%</span>
+    <span class="tick-sep">·</span>
+    <span class="tick-item"><span class="tick-dot"></span>NLP Market <span style="color:var(--silver)">$180B</span></span>
+    <span class="tick-sep">·</span>
+  </div>
+</div>
+
+<div class="pages" id="pagesRoot">
+
+<!-- ═══ HOME ═══ -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="eyebrow"><span class="eyebrow-dot"></span>Live Intelligence Platform</div>
+      <h1 class="heading-xl">The future of<br><em>technology,</em><br>quantified.</h1>
+      <p class="subtext">Real-time predictions, market analysis, and comprehensive insights across 12 technology domains — from AI to quantum computing.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="nav('fields')"><i class="fas fa-compass fa-xs"></i>Explore Fields</button>
+        <button class="btn btn-ghost" onclick="nav('dashboard')"><i class="fas fa-chart-line fa-xs"></i>View Dashboard</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-n counter" data-target="12">0</span>
+          <span class="stat-l">Technology Fields</span>
+        </div>
+        <div class="hero-stat">
+          <span class="stat-n counter" data-target="250">0</span>
+          <span class="stat-l">Predictions Tracked</span>
+        </div>
+        <div class="hero-stat">
+          <span class="stat-n">24/7</span>
+          <span class="stat-l">Live Monitoring</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="market-card">
+        <div class="market-card-header">
+          <span class="card-title">Market Growth Forecast — 2024 to 2030</span>
+          <span class="live-badge">Live</span>
+        </div>
+        <div class="market-card-body">
+          <div class="chart-wrap"><canvas id="heroChart"></canvas></div>
+        </div>
+        <div style="padding:1rem 1.5rem; border-top:1px solid var(--edge); display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div>
+            <span style="font-family:var(--mono);font-size:1.25rem;font-weight:500;color:var(--snow)">$3.0T</span>
+            <div style="font-size:0.7rem;color:var(--ghost);font-family:var(--mono);margin-top:2px;letter-spacing:0.05em">AI/ML by 2030</div>
+          </div>
+          <div>
+            <span style="font-family:var(--mono);font-size:1.25rem;font-weight:500;color:var(--emerald)">+500%</span>
+            <div style="font-size:0.7rem;color:var(--ghost);font-family:var(--mono);margin-top:2px;letter-spacing:0.05em">6yr growth est.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature strip -->
+  <div class="feature-strip">
+    <div class="feature-strip-inner">
+      <div class="feature-item">
+        <div class="feature-icon fi-blue"><i class="fas fa-bolt"></i></div>
+        <div class="feature-title">Real-Time Data</div>
+        <div class="feature-desc">Market figures and trend signals updated continuously from global intelligence sources.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-green"><i class="fas fa-chart-mixed"></i></div>
+        <div class="feature-title">Probability Forecasts</div>
+        <div class="feature-desc">Calibrated likelihood scores for major technological milestones through 2030.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-amber"><i class="fas fa-layer-group"></i></div>
+        <div class="feature-title">12 Technology Domains</div>
+        <div class="feature-desc">Comprehensive coverage from artificial intelligence to quantum computing and clean energy.</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-violet"><i class="fas fa-circle-nodes"></i></div>
+        <div class="feature-title">Competitive Intelligence</div>
+        <div class="feature-desc">Track key players, market leaders, and emerging disruptors within each domain.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Fields -->
+  <section class="section">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>Highest Demand</div>
+    <div class="section-header">
+      <h2 class="heading-lg" style="margin-bottom:0">Leading technology <em>fields</em></h2>
+      <button class="btn btn-ghost" onclick="nav('fields')" style="font-size:0.825rem">View All Fields <i class="fas fa-arrow-right fa-xs" style="margin-left:4px"></i></button>
+    </div>
+    <div class="fields-grid" id="homeFieldsGrid"></div>
+  </section>
+
+  <!-- Predictions -->
+  <section class="section" style="padding-top:0">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>Future Forecasts</div>
+    <h2 class="heading-lg" style="margin-bottom:0.5rem">Key <em>predictions</em> for 2025–2030</h2>
+    <p class="subtext" style="margin-bottom:2.75rem">Data-driven probability assessments for the decade's defining technological milestones.</p>
+    <div class="card">
+      <div class="card-header"><span class="card-header-dot" style="background:var(--azure)"></span>Milestone Probability Matrix</div>
+      <table class="pred-table">
+        <thead>
+          <tr>
+            <th>Technology</th>
+            <th>Predicted Milestone</th>
+            <th>Year</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>AI Agents</strong></td>
+            <td>Mainstream adoption in enterprise operations</td>
+            <td><span class="pred-year">2025</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:87%;background:var(--emerald)"></div></div><span class="prob-pct" style="color:var(--emerald)">87%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong>CRISPR Therapy</strong></td>
+            <td>First approval for common genetic disease</td>
+            <td><span class="pred-year">2025</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:78%;background:var(--azure)"></div></div><span class="prob-pct" style="color:var(--azure)">78%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong>CBDCs</strong></td>
+            <td>20+ countries launch digital currencies</td>
+            <td><span class="pred-year">2025</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:70%;background:var(--topaz)"></div></div><span class="prob-pct" style="color:var(--topaz)">70%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong>Quantum Computing</strong></td>
+            <td>First commercial quantum advantage demonstrated</td>
+            <td><span class="pred-year">2026</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:65%;background:var(--azure)"></div></div><span class="prob-pct" style="color:var(--azure)">65%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong>AI Film</strong></td>
+            <td>First fully AI-generated feature film released</td>
+            <td><span class="pred-year">2027</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:72%;background:var(--mist)"></div></div><span class="prob-pct" style="color:var(--mist)">72%</span></div></td>
+          </tr>
+          <tr>
+            <td><strong>Fusion Energy</strong></td>
+            <td>Sustained net-positive energy generation at scale</td>
+            <td><span class="pred-year">2028</span></td>
+            <td><div class="prob-row"><div class="prob-bar"><div class="prob-fill" style="width:60%;background:var(--topaz)"></div></div><span class="prob-pct" style="color:var(--topaz)">60%</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ FIELDS ═══ -->
+<div class="page" id="page-fields">
+  <section class="section">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>All Domains</div>
+    <h2 class="heading-lg">All technology <em>fields</em></h2>
+    <p class="subtext" style="margin-bottom:2.75rem">Comprehensive coverage across 12 major technology domains. Select any field for in-depth analysis and forecasts.</p>
+    <div class="fields-grid" id="allFieldsGrid"></div>
+  </section>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+  <section class="section">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>Analytics</div>
+    <h2 class="heading-lg">Interactive <em>dashboard</em></h2>
+    <p class="subtext" style="margin-bottom:2.75rem">Real-time market projections, demand distribution, and comparative growth analysis across all technology domains.</p>
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon" style="background:var(--azure-lo);color:var(--azure)"><i class="fas fa-chart-line fa-xs"></i></div>
+          <span class="dash-card-title">Market Size Projections — $B</span>
+        </div>
+        <div class="dash-card-body"><div class="chart-h"><canvas id="dashMarketChart"></canvas></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon" style="background:var(--emerald-lo);color:var(--emerald)"><i class="fas fa-chart-pie fa-xs"></i></div>
+          <span class="dash-card-title">Technology Demand Distribution</span>
+        </div>
+        <div class="dash-card-body"><div class="chart-h"><canvas id="dashDemandChart"></canvas></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon" style="background:var(--topaz-lo);color:var(--topaz)"><i class="fas fa-chart-bar fa-xs"></i></div>
+          <span class="dash-card-title">Annual Growth Rate Comparison — %</span>
+        </div>
+        <div class="dash-card-body"><div class="chart-h"><canvas id="dashGrowthChart"></canvas></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon" style="background:var(--rose-lo);color:var(--rose)"><i class="fas fa-circle-nodes fa-xs"></i></div>
+          <span class="dash-card-title">Technology Maturity Matrix</span>
+        </div>
+        <div class="dash-card-body"><div class="chart-h"><canvas id="dashMaturityChart"></canvas></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="page" id="page-stats">
+  <section class="section">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>Platform Scale</div>
+    <h2 class="heading-lg">By the <em>numbers</em></h2>
+    <p class="subtext" style="margin-bottom:2.75rem">The scale, depth, and reach of the TechHorizon intelligence infrastructure.</p>
+    <div class="stats-big">
+      <div class="stat-big">
+        <div class="stat-big-icon" style="background:var(--azure-lo);color:var(--azure)"><i class="fas fa-layer-group fa-xs"></i></div>
+        <span class="stat-big-n counter" data-target="12">0</span>
+        <span class="stat-big-label">Technology fields covered</span>
+      </div>
+      <div class="stat-big">
+        <div class="stat-big-icon" style="background:var(--emerald-lo);color:var(--emerald)"><i class="fas fa-bullseye fa-xs"></i></div>
+        <span class="stat-big-n counter" data-target="250">0</span>
+        <span class="stat-big-label">Predictions actively tracked</span>
+      </div>
+      <div class="stat-big">
+        <div class="stat-big-icon" style="background:var(--topaz-lo);color:var(--topaz)"><i class="fas fa-building fa-xs"></i></div>
+        <span class="stat-big-n counter" data-target="5000" data-suffix="+">0</span>
+        <span class="stat-big-label">Companies analysed</span>
+      </div>
+      <div class="stat-big">
+        <div class="stat-big-icon" style="background:var(--rose-lo);color:var(--rose)"><i class="fas fa-database fa-xs"></i></div>
+        <span class="stat-big-n counter" data-target="100" data-suffix="K">0</span>
+        <span class="stat-big-label">Data points processed daily</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══ DETAIL ═══ -->
+<div class="page" id="page-detail">
+  <div class="detail-hero">
+    <div class="detail-hero-inner">
+      <a href="#" class="back-link" id="backBtn" onclick="return false;"><i class="fas fa-arrow-left fa-xs"></i>&nbsp;Back to Fields</a>
+      <div class="detail-meta">
+        <div class="detail-icon-wrap" id="dIcon"></div>
+        <div id="dBadge"></div>
+      </div>
+      <h1 class="detail-h" id="dTitle"></h1>
+      <p class="detail-blurb" id="dBlurb"></p>
+      <div class="detail-kpi-row">
+        <div class="detail-kpi"><span class="kpi-val" id="dGrowth"></span><span class="kpi-key">Annual Growth</span></div>
+        <div class="detail-kpi"><span class="kpi-val" id="dMarket"></span><span class="kpi-key">Market Size</span></div>
+        <div class="detail-kpi"><span class="kpi-val" id="dDemand"></span><span class="kpi-key">Talent Demand</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="detail-body">
+    <div class="detail-main">
+      <div class="card">
+        <div class="card-header"><span class="card-header-dot" style="background:var(--azure)"></span>Market Growth Forecast</div>
+        <div class="card-body"><div style="height:260px;position:relative"><canvas id="detailChart"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-header-dot" style="background:var(--emerald)"></span>Milestone Predictions</div>
+        <div class="card-body" id="dPredictions"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-header-dot" style="background:var(--violet)"></span>Future Outlook</div>
+        <div class="card-body"><p class="future-text" id="dFuture"></p></div>
+      </div>
+    </div>
+    <div class="detail-sidebar">
+      <div class="card">
+        <div class="card-header"><span class="card-header-dot" style="background:var(--ghost)"></span>Key Skills</div>
+        <div class="card-body"><div class="tag-list" id="dSkills"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-header-dot" style="background:var(--azure)"></span>Popular Tools</div>
+        <div class="card-body"><div class="tag-list" id="dTools"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /pages -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <div class="footer-brand-mark">TH</div>
+          TechHorizon
+        </div>
+        <p class="footer-blurb">A comprehensive intelligence platform for technology forecasting, market analysis, and future-of-tech insights across 12 domains.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="#" onclick="nav('home');return false;">Overview</a></li>
+          <li><a href="#" onclick="nav('fields');return false;">All Fields</a></li>
+          <li><a href="#" onclick="nav('dashboard');return false;">Dashboard</a></li>
+          <li><a href="#" onclick="nav('stats');return false;">Statistics</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Top Fields</h5>
+        <ul>
+          <li><a href="#" onclick="showDetail('ai');return false;">Artificial Intelligence</a></li>
+          <li><a href="#" onclick="showDetail('machine-learning');return false;">Machine Learning</a></li>
+          <li><a href="#" onclick="showDetail('nlp');return false;">NLP</a></li>
+          <li><a href="#" onclick="showDetail('data-science');return false;">Data Science</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Connect</h5>
+        <ul>
+          <li><a href="#"><i class="fab fa-x-twitter fa-xs"></i>&nbsp; Twitter / X</a></li>
+          <li><a href="#"><i class="fab fa-linkedin fa-xs"></i>&nbsp; LinkedIn</a></li>
+          <li><a href="#"><i class="fab fa-github fa-xs"></i>&nbsp; GitHub</a></li>
+          <li><a href="#"><i class="fas fa-envelope fa-xs"></i>&nbsp; Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 TechHorizon. All rights reserved.</span>
+      <span class="footer-copy">Future Technology Intelligence Platform</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══ DATA ═══ */
+const FIELDS = {
+  'ai': { title:'Artificial Intelligence', icon:'🧠', badge:'growth', desc:'Creating intelligent systems capable of reasoning, learning, perception, and autonomous decision-making across healthcare, finance, robotics, and creative industries.', growth:45, market:800, demand:90, players:['OpenAI','DeepMind','Anthropic','Meta AI'], skills:['Deep Learning','Reinforcement Learning','Computer Vision','AI Safety','Multi-agent Systems','AI Ethics'], tools:['PyTorch','TensorFlow','OpenAI API','LangChain','AutoGPT','Weights & Biases'], predictions:[{year:2025,event:'AI agents autonomously manage business workflows',prob:82},{year:2027,event:'AI contributes to major scientific discoveries',prob:68},{year:2030,event:'AGI demonstrates human-level cognitive abilities',prob:35}], future:'AI is heading towards agentic systems that can plan and execute complex tasks. Safety, alignment, and ethical considerations will be paramount as models grow in capability and deployment scale.' },
+  'machine-learning': { title:'Machine Learning', icon:'🤖', badge:'growth', desc:'Algorithms that learn from data to make predictions, automate decisions, and discover patterns — powering everything from recommendations to autonomous vehicles.', growth:42, market:500, demand:92, players:['Google','Meta','Microsoft','Hugging Face'], skills:['Neural Networks','Deep Learning','Feature Engineering','Gradient Boosting','Transfer Learning','MLOps'], tools:['PyTorch','TensorFlow','Scikit-learn','XGBoost','MLflow','Kubeflow'], predictions:[{year:2025,event:'Foundation models become the standard development paradigm',prob:90},{year:2027,event:'ML systems surpass human accuracy in medical diagnosis',prob:75},{year:2030,event:'General-purpose ML achieves human-level reasoning',prob:45}], future:'The future of ML lies in foundation models, few-shot learning, and democratisation of AI through no-code platforms. Edge ML will bring intelligence to every connected device.' },
+  'data-science': { title:'Data Science', icon:'📊', badge:'growth', desc:'Combining statistics, programming, and domain expertise to extract meaningful insights from structured and unstructured data at scale.', growth:35, market:320, demand:88, players:['Databricks','Snowflake','Palantir','Tableau'], skills:['Python','R','SQL','Statistics','Data Visualisation','Big Data','A/B Testing'], tools:['Jupyter','Pandas','NumPy','Tableau','Power BI','Apache Spark'], predictions:[{year:2025,event:'Automated ML becomes standard in 80% of enterprises',prob:85},{year:2026,event:'Real-time analytics dominates business decisions',prob:78},{year:2028,event:'Data Science fully integrated with IoT ecosystems',prob:72}], future:'Data Science will become increasingly automated with AutoML, but the demand for skilled professionals who can interpret results and drive business strategy will continue growing.' },
+  'nlp': { title:'Natural Language Processing', icon:'💬', badge:'growth', desc:'Enabling machines to understand, interpret, and generate human language through transformer-based deep learning architectures and large-scale pretraining.', growth:48, market:180, demand:85, players:['OpenAI','Cohere','Mistral AI','Hugging Face'], skills:['Transformers','BERT/GPT','Sentiment Analysis','Attention Mechanisms','Retrieval-Augmented Generation','Tokenisation'], tools:['Hugging Face','spaCy','NLTK','OpenAI API','LangChain','Rasa'], predictions:[{year:2025,event:'Real-time translation reaches human parity',prob:88},{year:2026,event:'AI assistants handle 60% of customer service interactions',prob:82},{year:2028,event:'Multimodal understanding becomes mainstream',prob:70}], future:'NLP is moving towards multimodal understanding, combining text, speech, and visual inputs. Large Language Models will become more efficient, specialised, and deeply embedded in workflows.' },
+  'cybersecurity': { title:'Cybersecurity', icon:'🛡️', badge:'mature', desc:'Protecting systems, networks, and data from digital attacks through threat detection, zero-trust architecture, cryptography, and AI-driven defence mechanisms.', growth:33, market:250, demand:97, players:['CrowdStrike','Palo Alto Networks','Cloudflare','SentinelOne'], skills:['Network Security','Cryptography','Penetration Testing','Incident Response','Zero Trust','Cloud Security'], tools:['Wireshark','Metasploit','Burp Suite','Splunk','CrowdStrike Falcon','Cloudflare'], predictions:[{year:2025,event:'AI-driven autonomous defence becomes industry standard',prob:88},{year:2027,event:'Quantum-safe encryption deployed across critical infrastructure',prob:60},{year:2029,event:'Self-healing networks eliminate 90% of common attacks',prob:50}], future:'With quantum computing threats looming, the field is racing to develop post-quantum cryptography and AI-powered autonomous defence that operates faster than human reaction time.' },
+  'cloud-computing': { title:'Cloud Computing', icon:'☁️', badge:'mature', desc:'Delivering on-demand computing services over the internet — enabling unlimited scalability, cost-efficiency, and global collaboration without physical infrastructure.', growth:38, market:680, demand:93, players:['AWS','Microsoft Azure','Google Cloud','Cloudflare'], skills:['AWS/Azure/GCP','Serverless Architecture','Microservices','Container Orchestration','Terraform','Site Reliability Engineering'], tools:['Docker','Kubernetes','Terraform','Jenkins','Prometheus','Istio'], predictions:[{year:2025,event:'Edge-cloud hybrid becomes the dominant enterprise architecture',prob:85},{year:2027,event:'Serverless replaces traditional hosting for 60% of workloads',prob:65},{year:2029,event:'AI-managed autonomous cloud operations go mainstream',prob:55}], future:'The future is hybrid and multi-cloud with AI-driven operations. Edge computing will push processing closer to data sources, reducing latency and enabling real-time applications.' },
+  'quantum': { title:'Quantum Computing', icon:'⚛️', badge:'emerging', desc:'Leveraging quantum mechanics to process information in ways impossible for classical computers — unlocking breakthroughs in drug discovery, cryptography, and optimisation.', growth:55, market:125, demand:60, players:['IBM Quantum','Google Quantum AI','IonQ','D-Wave'], skills:['Quantum Mechanics','Qiskit','Quantum Algorithms','Error Correction','Linear Algebra','Superconducting Circuits'], tools:['Qiskit','Cirq','Amazon Braket','D-Wave Leap','PennyLane','Q#'], predictions:[{year:2026,event:'First commercial quantum advantage demonstrated at scale',prob:70},{year:2028,event:'Quantum systems begin threatening RSA-2048 encryption',prob:55},{year:2030,event:'Quantum cloud services become commercially viable',prob:45}], future:'Quantum computing is transitioning from laboratory research to commercial applications in drug discovery, financial modelling, and logistics optimisation — the next decade is critical.' },
+  'clean-energy': { title:'Clean Energy Technology', icon:'⚡', badge:'growth', desc:'Harnessing renewable sources, advanced storage, and smart grids to build sustainable, efficient power systems for a carbon-neutral global economy.', growth:50, market:400, demand:75, players:['Tesla Energy','First Solar','Helion Energy','Northvolt'], skills:['Solar Technology','Battery Storage','Smart Grid Engineering','Power Electronics','Sustainability Analysis','Grid Integration'], tools:['HOMER','PVSyst','MATLAB','AutoCAD Electrical','ETAP','EnergyPlus'], predictions:[{year:2026,event:'Fusion energy achieves sustained net-positive power output',prob:65},{year:2028,event:'Solar becomes the cheapest energy source globally',prob:80},{year:2030,event:'50% of global electricity generation from renewables',prob:70}], future:'The clean energy revolution is accelerating with breakthroughs in fusion, solid-state batteries, and AI-optimised smart grids — making the 2030s the era of energy abundance.' },
+  'blockchain': { title:'Blockchain & Web3', icon:'⛓️', badge:'growth', desc:'Decentralised, immutable ledgers enabling cryptocurrencies, smart contracts, DeFi, digital ownership, and trustless peer-to-peer transactions.', growth:25, market:200, demand:65, players:['Ethereum Foundation','Solana Labs','Chainlink','Polygon'], skills:['Solidity','Smart Contracts','DeFi Protocols','Cryptography','Consensus Mechanisms','Tokenomics'], tools:['Ethereum','Hardhat','MetaMask','IPFS','The Graph','Chainlink'], predictions:[{year:2025,event:'CBDCs launched by 30+ central banks worldwide',prob:75},{year:2026,event:'Enterprise blockchain reaches mass adoption in supply chain',prob:60},{year:2028,event:'Web3 digital identity becomes a global standard',prob:50}], future:'Blockchain is maturing beyond speculation into real-world applications in supply chain transparency, digital identity, and decentralised finance — scalability improvements are unlocking new use cases.' },
+  'devops': { title:'DevOps & MLOps', icon:'⚙️', badge:'mature', desc:'Bridging development and operations with automation, CI/CD pipelines, infrastructure as code, and ML lifecycle management for faster, more reliable delivery.', growth:30, market:150, demand:80, players:['HashiCorp','GitLab','Datadog','Harness'], skills:['CI/CD Pipelines','Infrastructure as Code','Observability','A/B Testing','Model Versioning','Platform Engineering'], tools:['Jenkins','GitLab CI','ArgoCD','MLflow','Kubeflow','DVC'], predictions:[{year:2025,event:'GitOps becomes the standard deployment methodology',prob:78},{year:2026,event:'MLOps platforms fully automate ML model lifecycle management',prob:70},{year:2028,event:'AIOps autonomously manages entire production infrastructures',prob:55}], future:'The convergence of DevOps and MLOps will lead to AIOps, where artificial intelligence manages operations autonomously. Platform engineering will abstract complexity from developers.' },
+  'computer-science': { title:'Computer Science', icon:'💻', badge:'mature', desc:'The systematic study of computation, algorithms, and information processing — the theoretical and practical foundation of all software and hardware systems.', growth:28, market:1200, demand:95, players:['Microsoft','Google','Apple','Meta'], skills:['Algorithms & Data Structures','System Design','Distributed Systems','Database Engineering','Compilers','Operating Systems'], tools:['Git','Docker','Linux','VS Code','PostgreSQL','Redis'], predictions:[{year:2025,event:'Quantum-resistant algorithms become enterprise security standard',prob:65},{year:2027,event:'Formal verification becomes mainstream in safety-critical systems',prob:55},{year:2030,event:'AI-assisted programming handles 80% of boilerplate code',prob:70}], future:'The fundamentals of CS remain evergreen. The field is evolving towards distributed systems, edge computing, and deep integration with AI tools that augment — not replace — software engineers.' },
+  'biotechnology': { title:'Biotechnology & CRISPR', icon:'🧬', badge:'growth', desc:'Gene editing, synthetic biology, and computational genomics revolutionising medicine, agriculture, and materials science through precise molecular engineering.', growth:29, market:300, demand:70, players:['CRISPR Therapeutics','Editas Medicine','Intellia','Ginkgo Bioworks'], skills:['CRISPR-Cas9','Genomics','Bioinformatics','Cell Engineering','mRNA Technology','Computational Biology'], tools:['Benchling','Geneious','Rosalind','AlphaFold','PyMOL','BLAST'], predictions:[{year:2025,event:'First CRISPR therapy approved for a common genetic disease',prob:78},{year:2027,event:'Personalised cancer vaccines reach Phase III approval',prob:65},{year:2030,event:'Gene therapy extends average healthy lifespan by 10+ years',prob:40}], future:'Biotechnology is entering a golden era as AI accelerates drug discovery and gene editing becomes safer and more precise — the next decade will bring cures for diseases once considered incurable.' }
+};
+
+const HOME_FIELDS = ['ai','machine-learning','data-science','nlp','cybersecurity','cloud-computing'];
+
+/* ═══ FIELD CARDS ═══ */
+function fieldCardHTML(id) {
+  const f = FIELDS[id];
+  const badgeClass = { growth:'badge-growth', emerging:'badge-emerging', mature:'badge-mature' }[f.badge];
+  const badgeLabel = { growth:'Growth', emerging:'Emerging', mature:'Established' }[f.badge];
+  const gColor = f.badge==='growth' ? 'var(--emerald)' : f.badge==='emerging' ? 'var(--azure)' : 'var(--topaz)';
+  return `<div class="field-card" onclick="showDetail('${id}')">
+    <div class="field-card-top">
+      <div class="field-icon-wrap">${f.icon}</div>
+      <span class="field-badge ${badgeClass}">${badgeLabel}</span>
+    </div>
+    <div class="field-name">${f.title}</div>
+    <div class="field-desc">${f.desc}</div>
+    <div class="field-metrics">
+      <div class="metric"><span class="metric-val" style="color:var(--emerald)">+${f.growth}%</span><span class="metric-key">Growth</span></div>
+      <div class="metric"><span class="metric-val" style="color:var(--azure)">$${f.market >= 1000 ? (f.market/1000).toFixed(1)+'T' : f.market+'B'}</span><span class="metric-key">Market</span></div>
+      <div class="metric"><span class="metric-val" style="color:${gColor}">${f.demand}%</span><span class="metric-key">Demand</span></div>
+    </div>
+    <div class="field-footer">
+      <div class="player-tags">${f.players.slice(0,3).map(p=>`<span class="player-tag">${p}</span>`).join('')}</div>
+      <span class="see-more">Details <i class="fas fa-arrow-right" style="font-size:.65rem"></i></span>
+    </div>
+  </div>`;
+}
+
+document.getElementById('homeFieldsGrid').innerHTML = HOME_FIELDS.map(fieldCardHTML).join('');
+document.getElementById('allFieldsGrid').innerHTML = Object.keys(FIELDS).map(fieldCardHTML).join('');
+
+/* ═══ DETAIL ═══ */
+let detailChartInst = null;
+function showDetail(id) {
+  const f = FIELDS[id];
+  if (!f) return;
+  hideAll();
+  const pg = document.getElementById('page-detail');
+  pg.classList.add('active','page-enter');
+  setTimeout(()=>pg.classList.remove('page-enter'),500);
+
+  document.getElementById('dIcon').textContent = f.icon;
+  const bc = {growth:'badge-growth',emerging:'badge-emerging',mature:'badge-mature'}[f.badge];
+  const bl = {growth:'Growth Phase',emerging:'Emerging',mature:'Established'}[f.badge];
+  document.getElementById('dBadge').innerHTML = `<span class="field-badge ${bc}">${bl}</span>`;
+  document.getElementById('dTitle').textContent = f.title;
+  document.getElementById('dBlurb').textContent = f.desc;
+  document.getElementById('dGrowth').textContent = `+${f.growth}%`;
+  document.getElementById('dGrowth').style.color = 'var(--emerald)';
+  document.getElementById('dMarket').textContent = `$${f.market >= 1000 ? (f.market/1000).toFixed(1)+'T' : f.market+'B'}`;
+  document.getElementById('dMarket').style.color = 'var(--azure)';
+  document.getElementById('dDemand').textContent = `${f.demand}%`;
+  document.getElementById('dFuture').textContent = f.future;
+  document.getElementById('dSkills').innerHTML = f.skills.map(s=>`<span class="tag tag-skill">${s}</span>`).join('');
+  document.getElementById('dTools').innerHTML = f.tools.map(t=>`<span class="tag tag-tool">${t}</span>`).join('');
+
+  document.getElementById('dPredictions').innerHTML = f.predictions.map(p=>{
+    const c = p.prob >= 75 ? 'var(--emerald)' : p.prob >= 55 ? 'var(--azure)' : 'var(--topaz)';
+    return `<div class="timeline-item">
+      <span class="tl-year">${p.year}</span>
+      <div class="tl-body">
+        <div class="tl-event">${p.event}</div>
+        <div class="tl-prob">
+          <div class="prob-bar" style="max-width:none;flex:1"><div class="prob-fill" style="width:${p.prob}%;background:${c}"></div></div>
+          <span class="prob-pct" style="color:${c}">${p.prob}%</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('backBtn').onclick = ()=>{ nav('fields'); return false; };
+
+  if (detailChartInst) { detailChartInst.destroy(); detailChartInst = null; }
+  setTimeout(()=>{
+    const ctx = document.getElementById('detailChart');
+    if (!ctx) return;
+    const base = f.market;
+    const rate = f.growth;
+    const data = [base];
+    for (let i=1;i<7;i++) data.push(Math.round(data[i-1]*(1+rate/100)));
+    detailChartInst = new Chart(ctx, {
+      type:'line',
+      data:{ labels:['2024','2025','2026','2027','2028','2029','2030'],
+        datasets:[{ label:`${f.title} ($B)`, data, borderColor:'#3B7CFF',
+          backgroundColor:'rgba(59,124,255,0.07)', fill:true, tension:0.4,
+          borderWidth:2, pointBackgroundColor:'#3B7CFF', pointBorderColor:'var(--surface)',
+          pointBorderWidth:2, pointRadius:5 }]
+      },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{
+          x:{ grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ color:'rgba(255,255,255,0.35)', font:{ size:11, family:'JetBrains Mono' } } },
+          y:{ grid:{ color:'rgba(255,255,255,0.05)' }, ticks:{ color:'rgba(255,255,255,0.35)', font:{ size:11, family:'JetBrains Mono' } } }
+        }
+      }
+    });
+  }, 250);
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ═══ NAVIGATION ═══ */
+function hideAll() {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a[data-page]').forEach(a=>a.classList.remove('active'));
+}
+
+let dashChartsInited = false;
+function nav(name) {
+  hideAll();
+  const pg = document.getElementById('page-'+name);
+  if (!pg) return;
+  pg.classList.add('active','page-enter');
+  setTimeout(()=>pg.classList.remove('page-enter'),500);
+  const lnk = document.querySelector(`.nav-links a[data-page="${name}"]`);
+  if (lnk) lnk.classList.add('active');
+  if (name==='dashboard' && !dashChartsInited) { setTimeout(initDashCharts,200); dashChartsInited=true; }
+  document.getElementById('navLinks').classList.remove('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ═══ CHART CONFIG ═══ */
+const CD = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { labels: { color:'rgba(255,255,255,0.45)', font:{ size:11, family:'JetBrains Mono' }, boxWidth:10, padding:16 } } },
+  scales: {
+    x: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(255,255,255,0.35)', font:{ size:11, family:'JetBrains Mono' } } },
+    y: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(255,255,255,0.35)', font:{ size:11, family:'JetBrains Mono' } } }
+  }
+};
+
+function initHeroChart() {
+  const ctx = document.getElementById('heroChart'); if (!ctx) return;
+  new Chart(ctx, {
+    type:'line',
+    data:{ labels:['2024','2025','2026','2027','2028','2029','2030'],
+      datasets:[
+        { label:'AI / ML', data:[500,680,920,1240,1680,2200,3000], borderColor:'#3B7CFF', backgroundColor:'rgba(59,124,255,0.08)', fill:true, tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor:'#3B7CFF' },
+        { label:'Cloud', data:[320,440,600,820,1100,1460,1950], borderColor:'#10C07A', backgroundColor:'rgba(16,192,122,0.05)', fill:true, tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor:'#10C07A' }
+      ]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'rgba(255,255,255,0.4)', font:{ size:10, family:'JetBrains Mono' }, boxWidth:8, padding:14 } } },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(255,255,255,0.3)', font:{ size:10 } } },
+        y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(255,255,255,0.3)', font:{ size:10 } } }
+      }
+    }
+  });
+}
+
+function initDashCharts() {
+  const m = document.getElementById('dashMarketChart');
+  if (m) new Chart(m, { type:'line', data:{ labels:['2024','2025','2026','2027','2028','2029','2030'],
+    datasets:[
+      { label:'AI / ML', data:[500,680,920,1240,1680,2200,3000], borderColor:'#3B7CFF', backgroundColor:'rgba(59,124,255,0.07)', fill:true, tension:0.4, borderWidth:2, pointRadius:3 },
+      { label:'Cloud', data:[320,440,600,820,1100,1460,1950], borderColor:'#10C07A', backgroundColor:'rgba(16,192,122,0.05)', fill:true, tension:0.4, borderWidth:2, pointRadius:3 },
+      { label:'NLP', data:[180,260,380,540,760,1050,1450], borderColor:'#FFB020', backgroundColor:'rgba(255,176,32,0.05)', fill:true, tension:0.4, borderWidth:2, pointRadius:3 }
+    ]}, options:CD });
+
+  const d = document.getElementById('dashDemandChart');
+  if (d) new Chart(d, { type:'doughnut', data:{
+    labels:['Cybersecurity','Computer Sci.','Cloud','ML','AI','Data Science','NLP','DevOps'],
+    datasets:[{ data:[97,95,93,92,90,88,85,80],
+      backgroundColor:['#10C07A','#3B7CFF','#6366F1','#8B5CF6','#FFB020','#3B82F6','#EC4899','#FF4B6E'],
+      borderColor:'var(--surface)', borderWidth:3
+    }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'rgba(255,255,255,0.4)', font:{ size:10, family:'JetBrains Mono' }, boxWidth:10 } } } }
+  });
+
+  const g = document.getElementById('dashGrowthChart');
+  if (g) new Chart(g, { type:'bar', data:{
+    labels:['Quantum','Clean Energy','NLP','AI','ML','Cloud','Data Sci.'],
+    datasets:[{ label:'Growth Rate %', data:[55,50,48,45,42,38,35],
+      backgroundColor:['#3B7CFF','#10C07A','#EC4899','#FFB020','#8B5CF6','#6366F1','#3B82F6'],
+      borderRadius:5, borderSkipped:false
+    }]},
+    options:{ ...CD, indexAxis:'y', plugins:{ legend:{ display:false } } }
+  });
+
+  const mt = document.getElementById('dashMaturityChart');
+  if (mt) new Chart(mt, { type:'bubble', data:{ datasets:[
+    { label:'Emerging', data:[{x:10,y:55,r:13},{x:8,y:50,r:10}], backgroundColor:'rgba(59,124,255,0.5)', borderColor:'rgba(59,124,255,0.8)', borderWidth:1 },
+    { label:'Growth Phase', data:[{x:25,y:45,r:22},{x:22,y:35,r:18},{x:20,y:42,r:20},{x:18,y:48,r:15}], backgroundColor:'rgba(16,192,122,0.5)', borderColor:'rgba(16,192,122,0.8)', borderWidth:1 },
+    { label:'Established', data:[{x:40,y:28,r:16},{x:38,y:33,r:14}], backgroundColor:'rgba(255,176,32,0.5)', borderColor:'rgba(255,176,32,0.8)', borderWidth:1 }
+  ]}, options:{ ...CD, scales:{
+    x:{ ...CD.scales.x, title:{ display:true, text:'Maturity Level', color:'rgba(255,255,255,0.3)', font:{ size:11, family:'JetBrains Mono' } } },
+    y:{ ...CD.scales.y, title:{ display:true, text:'Growth Rate (%)', color:'rgba(255,255,255,0.3)', font:{ size:11, family:'JetBrains Mono' } } }
+  }} });
+}
+
+/* ═══ COUNTERS ═══ */
+function runCounters(root) {
+  (root || document).querySelectorAll('.counter').forEach(el => {
+    const tgt = parseInt(el.dataset.target);
+    const suf = el.dataset.suffix || '';
+    let cur = 0; const steps = 60;
+    const inc = tgt / steps;
+    const id = setInterval(()=>{
+      cur += inc;
+      if (cur >= tgt) { el.textContent = tgt.toLocaleString() + suf; clearInterval(id); }
+      else { el.textContent = Math.floor(cur).toLocaleString() + suf; }
+    }, 35);
+  });
+}
+
+/* ═══ SCROLL ═══ */
+window.addEventListener('scroll', () => {
+  const nb = document.getElementById('navbar');
+  if (window.scrollY > 10) nb.classList.add('scrolled');
+  else nb.classList.remove('scrolled');
+});
+
+/* ═══ MOBILE NAV ═══ */
+document.getElementById('mobBtn').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('active');
+});
+
+/* ═══ INIT ═══ */
+document.addEventListener('DOMContentLoaded', () => {
+  runCounters();
+  initHeroChart();
+});
+</script>
+</body>
+</html>
